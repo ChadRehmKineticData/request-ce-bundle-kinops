@@ -9,11 +9,11 @@ import { actions } from '../../../redux/modules/settingsDatastore';
 
 export const FailedImportsComponent = ({ failedCalls }) => (
   <div>
-    <table>
+    <table className="table-responsive table-sm">
       <thead>
         <tr>
-          <th>Row Number</th>
-          <th>Error</th>
+          <th>CSV Row #</th>
+          <th>Fields errored</th>
         </tr>
       </thead>
       <tbody>
@@ -21,17 +21,20 @@ export const FailedImportsComponent = ({ failedCalls }) => (
           <tr key={idx}>
             <td>{call.rowNumber}</td>
             <td>
-              <table>
+              <table className="table-responsive table-sm">
+                <thead>
+                  <tr>
+                    <th>Field Name</th>
+                    <th>Errors</th>
+                  </tr>
+                </thead>
                 <tbody>
                   {call.fieldConstraintViolations
-                    .valueSeq()
-                    .map((errorList, field) => (
-                      <tr>
-                        <td>
-                          <span>{field}</span>
-
-                          <span>{JSON.stringify(errorList)}</span>
-                        </td>
+                    .entrySeq()
+                    .map((tuple, idx) => (
+                      <tr key={idx}>
+                        <td>{tuple[0]}</td>
+                        <td>{JSON.stringify(tuple[1])}</td>
                       </tr>
                     ))}
                 </tbody>
