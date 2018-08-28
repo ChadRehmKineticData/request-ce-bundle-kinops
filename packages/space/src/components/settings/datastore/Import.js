@@ -7,6 +7,43 @@ import Papa from 'papaparse';
 
 import { actions } from '../../../redux/modules/settingsDatastore';
 
+export const FailedImportsComponent = ({ failedCalls }) => (
+  <div>
+    <table>
+      <thead>
+        <tr>
+          <th>Row Number</th>
+          <th>Error</th>
+        </tr>
+      </thead>
+      <tbody>
+        {failedCalls.map((call, idx) => (
+          <tr key={idx}>
+            <td>{call.rowNumber}</td>
+            <td>
+              <table>
+                <tbody>
+                  {call.fieldConstraintViolations
+                    .valueSeq()
+                    .map((errorList, field) => (
+                      <tr>
+                        <td>
+                          <span>{field}</span>
+
+                          <span>{JSON.stringify(errorList)}</span>
+                        </td>
+                      </tr>
+                    ))}
+                </tbody>
+              </table>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+);
+
 /**
  *   This function creates the map that is used to match the csv's headers
  *  to feilds on the form.
@@ -83,6 +120,7 @@ export class ImportComponent extends Component {
       mapHeadersShow: false,
       percentComplete: 0,
       modal: false,
+      showFailed: false,
     };
     this.form = {};
     this.formFieldNames = [];
@@ -128,11 +166,13 @@ export class ImportComponent extends Component {
         let obj = {
           values: {},
         };
+        // csvRowMap is a row of the csv where each column header is mapped to its field value.
         csvRowMap.forEach((val, header) => {
           const found = headerToFieldMap.find(obj => obj.header === header);
           if (
             found.header.toLowerCase() === 'datastore record id' &&
-            !(val === '')
+            !(val === '') &&
+            !found.checked
           ) {
             obj.id = val;
           } else if (!found.checked) {
@@ -174,6 +214,10 @@ export class ImportComponent extends Component {
 
   handleShow = () => {
     this.setState({ mapHeadersShow: !this.state.mapHeadersShow });
+  };
+
+  handleFailed = () => {
+    this.setState({ showFailed: !this.state.showFailed });
   };
 
   // Read file and parse results when user makes a selection.
@@ -319,11 +363,26 @@ export class ImportComponent extends Component {
                       .attemptedRecords > 1 && 's'}{' '}
                     attempted to be posted
                   </p>
-                  <p>
-                    {this.props.failedCalls.size} record{this.props.failedCalls
-                      .size > 1 && 's'}{' '}
-                    failed
-                  </p>
+                  <div>
+                    <p>
+                      {this.props.failedCalls.size} record{this.props
+                        .failedCalls.size > 1 && 's'}{' '}
+                      failed
+                      {this.props.failedCalls.size > 0 && (
+                        <button
+                          onClick={this.handleFailed}
+                          className="btn btn-link"
+                        >
+                          Show Failed
+                        </button>
+                      )}
+                    </p>
+                  </div>
+                  {this.state.showFailed && (
+                    <FailedImportsComponent
+                      failedCalls={this.props.failedCalls}
+                    />
+                  )}
                 </Fragment>
               ) : (
                 <p>No records found to post</p>
@@ -336,7 +395,7 @@ export class ImportComponent extends Component {
                 <tbody>
                   {this.state.headerToFieldMap
                     .filter(
-                      obj => obj.header.toLowerCase === 'datastore record id',
+                      obj => obj.header.toLowerCase() === 'datastore record id',
                     )
                     .map((obj, idx) => (
                       <tr key={obj.header + idx}>

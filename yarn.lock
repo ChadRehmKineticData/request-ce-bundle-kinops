@@ -3180,9 +3180,15 @@ flatten@^1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/flatten/-/flatten-1.0.2.tgz#dae46a9d78fbe25292258cc1e780a41d95c03782"
 
-follow-redirects@^1.0.0, follow-redirects@^1.2.3:
+follow-redirects@^1.0.0:
   version "1.5.1"
   resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.5.1.tgz#67a8f14f5a1f67f962c2c46469c79eaec0a90291"
+  dependencies:
+    debug "^3.1.0"
+
+follow-redirects@^1.2.3:
+  version "1.5.7"
+  resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.5.7.tgz#a39e4804dacb90202bca76a9e2ac10433ca6a69a"
   dependencies:
     debug "^3.1.0"
 
@@ -6817,6 +6823,17 @@ react-is@^16.4.1:
 react-kinetic-core@^0.7.0:
   version "0.7.0"
   resolved "https://registry.yarnpkg.com/react-kinetic-core/-/react-kinetic-core-0.7.0.tgz#dfda4f6ab6b0bee87184e3aa42a40b3745ebe275"
+  dependencies:
+    axios "^0.16.1"
+    deepequal "^0.0.1"
+    lodash.isplainobject "^4.0.6"
+    lodash.isstring "^4.0.1"
+    react-redux "^5.0.4"
+    redux "^3.6.0"
+
+react-kinetic-core@^0.7.1:
+  version "0.7.1"
+  resolved "https://registry.yarnpkg.com/react-kinetic-core/-/react-kinetic-core-0.7.1.tgz#2064c918321773561d1b8104d92282e33b527d4a"
   dependencies:
     axios "^0.16.1"
     deepequal "^0.0.1"

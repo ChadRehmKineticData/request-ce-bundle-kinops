@@ -4,10 +4,8 @@ import {
   takeEvery,
   select,
   all,
-  takeLatest,
   throttle,
 } from 'redux-saga/effects';
-import { delay } from 'redux-saga';
 import { CoreAPI } from 'react-kinetic-core';
 import { fromJS, Seq, Map, List } from 'immutable';
 import { push } from 'connected-react-router';
@@ -600,10 +598,29 @@ export function* executeImportSaga(action) {
       .toJS(),
   );
 
+  const lastChunckSize = recordsChunk.last().size;
+
   for (let x = 0; x < responses.length; x++) {
-    const { serverError, errors } = responses[x];
+    const rowNumber =
+      recordsChunk.size > 1
+        ? recordsLength -
+          (recordsChunk.size * CHUNK_SIZE - lastChunckSize + x + 1)
+        : x + 1;
+
+    const { serverError, errors, fieldConstraintViolations } = responses[x];
+
     if (serverError || errors) {
-      yield put(actions.setImportFailedCall(errors ? errors : serverError));
+      yield put(
+        actions.setImportFailedCall(
+          errors
+            ? {
+                rowNumber,
+                errors,
+                fieldConstraintViolations: fromJS(fieldConstraintViolations),
+              }
+            : { rowNumber, serverError },
+        ),
+      );
     }
   }
 
