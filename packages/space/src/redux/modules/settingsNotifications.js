@@ -87,6 +87,7 @@ export const State = Record({
   variables: null,
   dateFormats: [],
   dateFormatsLoading: true,
+  formFields: [],
 });
 
 export const reducer = (state = State(), { type, payload }) => {
@@ -98,7 +99,8 @@ export const reducer = (state = State(), { type, payload }) => {
         .set('loading', false)
         .set('errors', [])
         .set('notificationTemplates', payload.templates)
-        .set('notificationSnippets', payload.snippets);
+        .set('notificationSnippets', payload.snippets)
+        .set('formFields', payload.fields);
     case types.SET_FETCH_NOTIFICATIONS_ERROR:
       return state.set('loading', false).set('errors', payload);
     case types.FETCH_NOTIFICATION:

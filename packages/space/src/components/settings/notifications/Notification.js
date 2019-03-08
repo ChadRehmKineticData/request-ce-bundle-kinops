@@ -71,6 +71,7 @@ const NotificationComponent = ({
   handleFieldBlur,
   handleSubmit,
   handleVariableSelection,
+  formFields,
 }) => (
   <div className="page-container page-container--panels page-container--notifications">
     <PageTitle
@@ -179,32 +180,36 @@ const NotificationComponent = ({
               value={values.get('Region')}
             />
           </div>
-          <div className="form-group">
-            <label className="field-label" htmlFor="attachmentFieldNames">
-              <I18n>Attachment Field Names</I18n>
-            </label>
-            <input
-              type="text"
-              id="attachmentFieldNames"
-              name="Attachment Field Names"
-              onChange={handleFieldChange}
-              onBlur={handleFieldBlur}
-              value={values.get('Attachment Field Names')}
-            />
-          </div>
-          <div className="form-group">
-            <label className="field-label" htmlFor="attachmentSubmissionId">
-              <I18n>Attachment Submission Id</I18n>
-            </label>
-            <input
-              type="text"
-              id="attachmentSubmissionId"
-              name="Attachment Submission Id"
-              onChange={handleFieldChange}
-              onBlur={handleFieldBlur}
-              value={values.get('Attachment Submission Id')}
-            />
-          </div>
+          {formFields.includes('Attachment Field Names') && (
+            <div className="form-group">
+              <label className="field-label" htmlFor="attachmentFieldNames">
+                <I18n>Attachment Field Names</I18n>
+              </label>
+              <input
+                type="text"
+                id="attachmentFieldNames"
+                name="Attachment Field Names"
+                onChange={handleFieldChange}
+                onBlur={handleFieldBlur}
+                value={values.get('Attachment Field Names')}
+              />
+            </div>
+          )}
+          {formFields.includes('Attachment Submission Id') && (
+            <div className="form-group">
+              <label className="field-label" htmlFor="attachmentSubmissionId">
+                <I18n>Attachment Submission Id</I18n>
+              </label>
+              <input
+                type="text"
+                id="attachmentSubmissionId"
+                name="Attachment Submission Id"
+                onChange={handleFieldChange}
+                onBlur={handleFieldBlur}
+                value={values.get('Attachment Submission Id')}
+              />
+            </div>
+          )}
           {isVisible('Subject', values) && (
             <div className="form-group required">
               <label className="field-label" htmlFor="subject">
@@ -354,6 +359,7 @@ export const mapStateToProps = (state, props) => ({
   title: props.match.params.type === 'templates' ? 'Template' : 'Snippet',
   loading: state.space.settingsNotifications.notificationLoading,
   saving: state.space.settingsNotifications.saving,
+  formFields: state.space.settingsNotifications.formFields,
 });
 
 export const mapDispatchToProps = {

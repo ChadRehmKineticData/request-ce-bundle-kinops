@@ -13,7 +13,7 @@ import {
 
 export function* fetchNotificationsSaga() {
   const query = new CoreAPI.SubmissionSearch(true);
-  query.include('details,values');
+  query.include('details,values,form.fields');
   query.limit('1000');
   query.index('createdAt');
 
@@ -27,10 +27,23 @@ export function* fetchNotificationsSaga() {
   } else if (errors) {
     yield put(actions.setFetchNotificationsError(errors));
   } else {
+    let fields;
+    try {
+      fields = submissions[0].form.fields.reduce((acc, obj) => {
+        acc.push(obj.name);
+        return acc;
+      }, []);
+    } catch (e) {
+      console.warn(
+        'Either a notification was not found or fields where not included in the result.',
+        e,
+      );
+    }
     yield put(
       actions.setNotifications({
         templates: submissions.filter(sub => sub.values.Type === 'Template'),
         snippets: submissions.filter(sub => sub.values.Type === 'Snippet'),
+        fields,
       }),
     );
   }
@@ -111,8 +124,8 @@ export function* cloneNotificationSaga(action) {
         submission.form.slug === NOTIFICATIONS_DATE_FORMAT_FORM_SLUG
           ? 'date-formats'
           : submission.values.Type === 'Template'
-            ? 'templates'
-            : 'snippets';
+          ? 'templates'
+          : 'snippets';
       yield put(actions.setCloneSuccess());
       yield put(actions.fetchNotifications());
       yield put(push(`/settings/notifications/${type}/${cloneSubmission.id}`));
